@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
+	"os"
 	"strings"
+
+	flag "github.com/spf13/pflag"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -24,16 +26,31 @@ var (
 	q    *bool
 	h    *string
 	uids *string
+	help *bool
 )
 
 func init() {
-	q = flag.Bool("q", false, "Only display process IDs")
-	h = flag.String("host", "", "Container host")
-	uids = flag.String("uid", "", "Only display processes for Username/UID(s)")
+	q = flag.BoolP("quiet", "q", false, "Only display process IDs")
+	h = flag.StringP("host", "h", "", "Container `host`")
+	uids = flag.String("uid", "", "Only display processes for `user`name/UID(s)")
+	help = flag.Bool("help", false, "Show this help text")
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, "\nUsage: docker-pps [OPTIONS]\n\nShow list of Processes running in docker containers\n\nOptions:")
+		flag.PrintDefaults()
+	}
+
+	flag.CommandLine.MarkHidden("help")
+	flag.CommandLine.SortFlags = false
+
 	flag.Parse()
+
+	if *help {
+		flag.Usage()
+		return
+	}
 
 	var opts []client.Opt
 	if *h != "" {
