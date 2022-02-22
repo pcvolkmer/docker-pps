@@ -31,7 +31,7 @@ var (
 
 func init() {
 	q = flag.BoolP("quiet", "q", false, "Only display process IDs")
-	h = flag.StringP("host", "h", "", "Container `host`")
+	h = flag.StringP("host", "H", "", "Container `host`")
 	uids = flag.String("uid", "", "Only display processes for `user`name/UID(s)")
 	help = flag.Bool("help", false, "Show this help text")
 }
@@ -54,7 +54,18 @@ func main() {
 
 	var opts []client.Opt
 	if *h != "" {
-		opts = append(opts, client.WithHost(*h))
+		if !strings.Contains(*h, "//") {
+			*h = "tcp://" + *h
+		}
+		if u, err := client.ParseHostURL(*h); err == nil {
+			if u.Port() != "" {
+				opts = append(opts, client.WithHost(*h))
+			} else {
+				opts = append(opts, client.WithHost(*h+":2375"))
+			}
+		} else {
+			log.Fatal(err)
+		}
 	}
 
 	dc, err := client.NewClientWithOpts(opts...)
