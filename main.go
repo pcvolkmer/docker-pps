@@ -52,23 +52,7 @@ func main() {
 		return
 	}
 
-	var opts []client.Opt
-	if *h != "" {
-		if !strings.Contains(*h, "//") {
-			*h = "tcp://" + *h
-		}
-		if u, err := client.ParseHostURL(*h); err == nil {
-			if u.Port() != "" {
-				opts = append(opts, client.WithHost(*h))
-			} else {
-				opts = append(opts, client.WithHost(*h+":2375"))
-			}
-		} else {
-			log.Fatal(err)
-		}
-	}
-
-	dc, err := client.NewClientWithOpts(opts...)
+	dc, err := client.NewClientWithOpts(getClientOpts(h)...)
 	if err != nil {
 		log.Fatalln(err)
 		return
@@ -156,4 +140,24 @@ func contains(uids []string, uid string) bool {
 		}
 	}
 	return false
+}
+
+// Get client opts from host param
+func getClientOpts(h *string) []client.Opt {
+	var opts []client.Opt
+	if *h != "" {
+		if !strings.Contains(*h, "//") {
+			*h = "tcp://" + *h
+		}
+		if u, err := client.ParseHostURL(*h); err == nil {
+			if u.Port() != "" {
+				opts = append(opts, client.WithHost(*h))
+			} else {
+				opts = append(opts, client.WithHost(*h+":2375"))
+			}
+		} else {
+			log.Fatal(err)
+		}
+	}
+	return opts
 }
