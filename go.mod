@@ -3,6 +3,7 @@ module github.com/pcvolkmer/docker-pps
 go 1.17
 
 require (
+	github.com/docker/cli v0.0.0-20191017083524-a8ff7f821017
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/spf13/pflag v1.0.5
 )

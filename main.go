@@ -9,6 +9,7 @@ import (
 
 	flag "github.com/spf13/pflag"
 
+	"github.com/docker/cli/cli/connhelper"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 )
@@ -146,6 +147,16 @@ func contains(uids []string, uid string) bool {
 func getClientOpts(h *string) []client.Opt {
 	var opts []client.Opt
 	if *h != "" {
+		// SSH
+		if strings.HasPrefix(*h, "ssh://") {
+			if helper, err := connhelper.GetConnectionHelper(*h); err == nil {
+				opts = append(opts, client.WithDialContext(helper.Dialer))
+			} else {
+				log.Fatal(err)
+			}
+		}
+
+		// TCP/HTTP
 		if !strings.Contains(*h, "//") {
 			*h = "tcp://" + *h
 		}
