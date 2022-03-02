@@ -86,7 +86,7 @@ func main() {
 			for _, process := range tops.Processes {
 				processes = append(processes, Process{
 					ContainerID: container.ID,
-					Image:       container.Image,
+					Image:       strings.Split(container.Image, "@sha256")[0],
 					PID:         process[pid],
 					UID:         process[uid],
 					Command:     process[cmd],
