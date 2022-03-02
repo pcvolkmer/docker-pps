@@ -30,10 +30,11 @@ CONTAINER ID   IMAGE    PID        UID        COMMAND
 123456789abc   nginx    13572      101        nginx: worker process
 ```
 
-Use `-q` argument to show a list of PIDs
+Use `-q`/`--quiet` argument to show a list of PIDs
 
 ```shell
 $ docker-pps -q
+$ docker-pps --quiet
 ```
 shows
 ```
@@ -43,8 +44,9 @@ shows
 13572
 ```
 
-To select another docker host, use `--host` argument
+To select another docker host, use `-H`/`--host` argument.
 
 ```shell
-$ docker-pps --host=http://otherhost:1234
+$ docker-pps -H http://otherhost:1234
+$ docker-pps --host=ssh://otherhost:22
 ```
