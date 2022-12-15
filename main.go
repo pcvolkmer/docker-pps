@@ -39,11 +39,11 @@ func init() {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, "\nUsage: docker-pps [OPTIONS]\n\nShow list of Processes running in docker containers\n\nOptions:")
+		_, _ = fmt.Fprintln(os.Stderr, "\nUsage: docker-pps [OPTIONS]\n\nShow list of Processes running in docker containers\n\nOptions:")
 		flag.PrintDefaults()
 	}
 
-	flag.CommandLine.MarkHidden("help")
+	_ = flag.CommandLine.MarkHidden("help")
 	flag.CommandLine.SortFlags = false
 
 	flag.Parse()
