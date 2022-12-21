@@ -17,6 +17,7 @@ CONTAINER ID   IMAGE    PID        UID        COMMAND
 123456789abc   nginx    13572      101        nginx: worker process
 ```
 
+User IDs will be shown as usernames on host if there exists a user with matching UID.
 To filter processes by user, provide `--uid` argument with comma separated usernames or IDs.
 
 ```shell
