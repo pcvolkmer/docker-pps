@@ -59,6 +59,17 @@ func main() {
 		return
 	}
 
+	if processes, err := getProcesses(dc); err == nil {
+		if *q == true {
+			printQuietTable(processes)
+			return
+		}
+		printTable(processes)
+	}
+}
+
+// Get all processes running in docker containers
+func getProcesses(dc *client.Client) ([]Process, error) {
 	var processes []Process
 
 	if containers, err := dc.ContainerList(context.Background(), types.ContainerListOptions{All: true}); err == nil {
@@ -94,14 +105,10 @@ func main() {
 			}
 		}
 	} else {
-		log.Fatalln(err)
+		return nil, err
 	}
 
-	if *q == true {
-		printQuietTable(processes)
-		return
-	}
-	printTable(processes)
+	return processes, nil
 }
 
 // Print out table if processes, running within docker containers
