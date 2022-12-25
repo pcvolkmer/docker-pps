@@ -74,38 +74,49 @@ func getProcesses(dc *client.Client) ([]Process, error) {
 
 	if containers, err := dc.ContainerList(context.Background(), types.ContainerListOptions{All: true}); err == nil {
 		for _, container := range containers {
-			tops, err := dc.ContainerTop(context.Background(), container.ID, []string{})
-			if err != nil {
-				continue
-			}
-
-			uid := 0
-			pid := 0
-			cmd := 0
-			for idx, title := range tops.Titles {
-				if title == "UID" {
-					uid = idx
-				}
-				if title == "PID" {
-					pid = idx
-				}
-				if title == "CMD" {
-					cmd = idx
-				}
-			}
-
-			for _, process := range tops.Processes {
-				processes = append(processes, Process{
-					ContainerID: container.ID,
-					Image:       strings.Split(container.Image, "@sha256")[0],
-					PID:         process[pid],
-					UID:         process[uid],
-					Command:     process[cmd],
-				})
+			if containerProcesses, err := containerProcesses(dc, container); err == nil {
+				processes = append(processes, containerProcesses...)
 			}
 		}
 	} else {
 		return nil, err
+	}
+
+	return processes, nil
+}
+
+// Get all processes running in current docker container
+func containerProcesses(dc *client.Client, container types.Container) ([]Process, error) {
+	var processes []Process
+
+	tops, err := dc.ContainerTop(context.Background(), container.ID, []string{})
+	if err != nil {
+		return nil, err
+	}
+
+	uid := 0
+	pid := 0
+	cmd := 0
+	for idx, title := range tops.Titles {
+		if title == "UID" {
+			uid = idx
+		}
+		if title == "PID" {
+			pid = idx
+		}
+		if title == "CMD" {
+			cmd = idx
+		}
+	}
+
+	for _, process := range tops.Processes {
+		processes = append(processes, Process{
+			ContainerID: container.ID,
+			Image:       strings.Split(container.Image, "@sha256")[0],
+			PID:         process[pid],
+			UID:         process[uid],
+			Command:     process[cmd],
+		})
 	}
 
 	return processes, nil
