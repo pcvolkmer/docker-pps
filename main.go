@@ -65,6 +65,8 @@ func main() {
 			return
 		}
 		printTable(processes)
+	} else {
+		log.Println(err)
 	}
 }
 
