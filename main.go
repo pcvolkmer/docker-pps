@@ -178,13 +178,13 @@ func getClientOpts(h *string) []client.Opt {
 
 		// TCP/HTTP
 		if !strings.Contains(*h, "//") {
-			*h = "tcp://" + *h
+			*h = fmt.Sprintf("tcp://%s", *h)
 		}
 		if u, err := client.ParseHostURL(*h); err == nil {
 			if u.Port() != "" {
 				opts = append(opts, client.WithHost(*h))
 			} else {
-				opts = append(opts, client.WithHost(*h+":2375"))
+				opts = append(opts, client.WithHost(fmt.Sprintf("%s:2375", *h)))
 			}
 		} else {
 			log.Fatal(err)
